@@ -2122,3 +2122,54 @@ function showToast(message, type = "success") {
     toast.classList.remove("show");
   }, 3000);
 }
+/* =====================================================
+   PWA SERVICE WORKER
+===================================================== */
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register(
+        "./service-worker.js",
+        {
+          scope: "./",
+        },
+      );
+
+      console.log("Scooter Tracker offline mode ready:", registration.scope);
+    } catch (error) {
+      console.error("Service worker registration failed:", error);
+    }
+  });
+}
+
+/* =====================================================
+   REQUEST PERSISTENT LOCAL STORAGE
+===================================================== */
+
+async function requestPersistentAppStorage() {
+  if (!navigator.storage || typeof navigator.storage.persist !== "function") {
+    return;
+  }
+
+  try {
+    const alreadyPersistent = await navigator.storage.persisted();
+
+    if (alreadyPersistent) {
+      console.log("Local storage is already persistent.");
+      return;
+    }
+
+    const permissionGranted = await navigator.storage.persist();
+
+    console.log(
+      permissionGranted
+        ? "Persistent local storage enabled."
+        : "Persistent storage was not granted.",
+    );
+  } catch (error) {
+    console.error("Persistent storage request failed:", error);
+  }
+}
+
+window.addEventListener("load", requestPersistentAppStorage);

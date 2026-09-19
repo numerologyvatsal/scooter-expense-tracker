@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="gu">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Scooterના daily KM, petrol, service અને બીજા ખર્ચનો હિસાબ રાખવા માટેનું dashboard."
+    />
+
+    <title>Scooter Expense Tracker</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- Mobile overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">S</div>
+
+        <div>
+          <h1>Scooter Tracker</h1>
+          <p>Expense & KM Manager</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <button
+          type="button"
+          class="nav-item active"
+          data-section="dashboardSection"
+        >
+          <span class="nav-icon">⌂</span>
+          <span>ડેશબોર્ડ</span>
+        </button>
+
+        <button type="button" class="nav-item" data-section="ridesSection">
+          <span class="nav-icon">↗</span>
+          <span>Daily KM</span>
+        </button>
+
+        <button type="button" class="nav-item" data-section="expensesSection">
+          <span class="nav-icon">₹</span>
+          <span>ખર્ચ</span>
+        </button>
+
+        <button
+          type="button"
+          class="nav-item"
+          data-section="maintenanceSection"
+        >
+          <span class="nav-icon">⚙</span>
+          <span>સર્વિસ</span>
+        </button>
+
+        <button type="button" class="nav-item" data-section="reportsSection">
+          <span class="nav-icon">▥</span>
+          <span>રિપોર્ટ</span>
+        </button>
+
+        <button type="button" class="nav-item" data-section="scootersSection">
+          <span class="nav-icon">+</span>
+          <span>મારા Scooter</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Data તમારા browserમાં સુરક્ષિત રહેશે.</p>
+      </div>
+    </aside>
+
+    <!-- Main area -->
+    <div class="app-container">
+      <!-- Header -->
+      <header class="top-header">
+        <div class="header-left">
+          <button
+            type="button"
+            id="menuButton"
+            class="menu-button"
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+
+          <div>
+            <p class="page-label">Scooter Expense Tracker</p>
+            <h2 id="pageTitle">ડેશબોર્ડ</h2>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <label for="activeScooterSelect" class="sr-only">
+            Scooter પસંદ કરો
+          </label>
+
+          <select id="activeScooterSelect" class="scooter-selector">
+            <option value="">Scooter પસંદ કરો</option>
+          </select>
+
+          <button
+            type="button"
+            class="primary-button"
+            id="openRideDialogButton"
+          >
+            + KM નોંધો
+          </button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <!-- Dashboard -->
+        <section id="dashboardSection" class="page-section active">
+          <div class="welcome-panel">
+            <div>
+              <p class="eyebrow">આજનો હિસાબ</p>
+              <h3 id="dashboardScooterName">તમારું Scooter પસંદ કરો</h3>
+
+              <p>
+                Daily ride, petrol અને maintenanceનો સંપૂર્ણ હિસાબ એક જગ્યાએ
+                રાખો.
+              </p>
+            </div>
+
+            <div class="odometer-display">
+              <span>Last Odometer</span>
+
+              <strong>
+                <span id="lastOdometerValue">0</span>
+                <small>KM</small>
+              </strong>
+            </div>
+          </div>
+
+          <!-- Summary cards -->
+          <div class="summary-grid">
+            <article class="summary-card blue-card">
+              <div class="card-heading">
+                <span>આજના KM</span>
+                <span class="card-icon">↗</span>
+              </div>
+
+              <strong id="todayKmValue">0 KM</strong>
+              <p id="todayRideCount">આજે કોઈ ride નથી</p>
+            </article>
+
+            <article class="summary-card green-card">
+              <div class="card-heading">
+                <span>આ મહિનાના KM</span>
+                <span class="card-icon">KM</span>
+              </div>
+
+              <strong id="monthKmValue">0 KM</strong>
+              <p>Current month distance</p>
+            </article>
+
+            <article class="summary-card orange-card">
+              <div class="card-heading">
+                <span>આ મહિનાનો ખર્ચ</span>
+                <span class="card-icon">₹</span>
+              </div>
+
+              <strong id="monthExpenseValue">₹0</strong>
+              <p id="monthExpenseCount">કોઈ ખર્ચ નોંધાયેલ નથી</p>
+            </article>
+
+            <article class="summary-card purple-card">
+              <div class="card-heading">
+                <span>Running Cost</span>
+                <span class="card-icon">₹/KM</span>
+              </div>
+
+              <strong id="costPerKmValue">₹0.00</strong>
+              <p>દરેક KM પાછળનો ખર્ચ</p>
+            </article>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="content-grid">
+            <article class="panel quick-actions-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Quick Entry</p>
+                  <h3>નવો રેકોર્ડ ઉમેરો</h3>
+                </div>
+              </div>
+
+              <div class="quick-action-grid">
+                <button
+                  type="button"
+                  class="quick-action ride-action"
+                  id="dashboardRideButton"
+                >
+                  <span class="quick-icon">KM</span>
+
+                  <span>
+                    <strong>KM નોંધો</strong>
+                    <small>નવું odometer reading</small>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-action petrol-action"
+                  id="dashboardPetrolButton"
+                >
+                  <span class="quick-icon">P</span>
+
+                  <span>
+                    <strong>Petrol ઉમેરો</strong>
+                    <small>Litres અને amount</small>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-action expense-action"
+                  id="dashboardExpenseButton"
+                >
+                  <span class="quick-icon">₹</span>
+
+                  <span>
+                    <strong>બીજો ખર્ચ</strong>
+                    <small>Repair, insurance વગેરે</small>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  class="quick-action service-action"
+                  id="dashboardServiceButton"
+                >
+                  <span class="quick-icon">S</span>
+
+                  <span>
+                    <strong>Service નોંધો</strong>
+                    <small>Service અને oil change</small>
+                  </span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Maintenance status -->
+            <article class="panel maintenance-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Maintenance</p>
+                  <h3>આગામી સર્વિસ</h3>
+                </div>
+              </div>
+
+              <div class="maintenance-item">
+                <div class="maintenance-title">
+                  <span>General Service</span>
+                  <strong id="serviceKmRemaining"> Not set </strong>
+                </div>
+
+                <div class="progress-track">
+                  <div
+                    id="serviceProgressBar"
+                    class="progress-bar service-progress"
+                    style="width: 0%"
+                  ></div>
+                </div>
+
+                <p id="nextServiceDetails">Service reminder set કરેલ નથી</p>
+              </div>
+
+              <div class="maintenance-item">
+                <div class="maintenance-title">
+                  <span>Engine Oil Change</span>
+                  <strong id="oilKmRemaining"> Not set </strong>
+                </div>
+
+                <div class="progress-track">
+                  <div
+                    id="oilProgressBar"
+                    class="progress-bar oil-progress"
+                    style="width: 0%"
+                  ></div>
+                </div>
+
+                <p id="nextOilDetails">Oil change reminder set કરેલ નથી</p>
+              </div>
+            </article>
+          </div>
+
+          <!-- Recent activity -->
+          <article class="panel">
+            <div class="panel-header responsive-panel-header">
+              <div>
+                <p class="eyebrow">Latest Records</p>
+                <h3>તાજેતરની Activity</h3>
+              </div>
+
+              <button
+                type="button"
+                class="text-button"
+                data-go-to="ridesSection"
+              >
+                બધા રેકોર્ડ જુઓ
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>તારીખ</th>
+                    <th>પ્રકાર</th>
+                    <th>વિગત</th>
+                    <th>KM</th>
+                    <th>રકમ</th>
+                  </tr>
+                </thead>
+
+                <tbody id="recentActivityTableBody">
+                  <tr class="empty-table-row">
+                    <td colspan="5">હજી કોઈ activity નોંધાયેલ નથી.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- Daily KM section -->
+        <section id="ridesSection" class="page-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Daily Ride Log</p>
+              <h3>KM અને Ride History</h3>
+              <p>
+                દરેક stop પર odometer reading દાખલ કરો. Ride distance automatic
+                calculate થશે.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="primary-button"
+              id="ridesPageAddButton"
+            >
+              + નવું KM Reading
+            </button>
+          </div>
+
+          <div class="summary-grid compact-grid">
+            <article class="mini-summary-card">
+              <span>આજના કુલ KM</span>
+              <strong id="ridesTodayTotal">0 KM</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>આ અઠવાડિયાના KM</span>
+              <strong id="ridesWeekTotal">0 KM</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>આ મહિનાના KM</span>
+              <strong id="ridesMonthTotal">0 KM</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>Average Daily KM</span>
+              <strong id="averageDailyKm">0 KM</strong>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Odometer Entries</p>
+                <h3>Ride History</h3>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Previous KM</th>
+                    <th>Current KM</th>
+                    <th>Ride KM</th>
+                    <th>સ્થળ / નોંધ</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody id="rideHistoryTableBody">
+                  <tr class="empty-table-row">
+                    <td colspan="6">પ્રથમ odometer reading દાખલ કરો.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- Expenses section -->
+        <section id="expensesSection" class="page-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Expense Manager</p>
+              <h3>બધા ખર્ચ</h3>
+              <p>Petrol, repair, insurance અને બીજા ખર્ચનો સંપૂર્ણ રેકોર્ડ.</p>
+            </div>
+
+            <div class="button-group">
+              <button
+                type="button"
+                class="secondary-button"
+                id="expensesPagePetrolButton"
+              >
+                + Petrol
+              </button>
+
+              <button
+                type="button"
+                class="primary-button"
+                id="expensesPageAddButton"
+              >
+                + બીજો ખર્ચ
+              </button>
+            </div>
+          </div>
+
+          <div class="summary-grid compact-grid">
+            <article class="mini-summary-card">
+              <span>કુલ Petrol ખર્ચ</span>
+              <strong id="totalPetrolExpense">₹0</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>કુલ Service ખર્ચ</span>
+              <strong id="totalServiceExpense">₹0</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>બીજા ખર્ચ</span>
+              <strong id="totalOtherExpense">₹0</strong>
+            </article>
+
+            <article class="mini-summary-card">
+              <span>કુલ Scooter ખર્ચ</span>
+              <strong id="grandTotalExpense">₹0</strong>
+            </article>
+          </div>
+
+          <article class="panel">
+            <div class="filter-row">
+              <div>
+                <label for="expenseMonthFilter"> મહિનો </label>
+
+                <input type="month" id="expenseMonthFilter" />
+              </div>
+
+              <div>
+                <label for="expenseTypeFilter"> ખર્ચનો પ્રકાર </label>
+
+                <select id="expenseTypeFilter">
+                  <option value="all">બધા ખર્ચ</option>
+                  <option value="petrol">Petrol</option>
+                  <option value="service">Service</option>
+                  <option value="oil">Engine Oil</option>
+                  <option value="repair">Repair</option>
+                  <option value="insurance">Insurance</option>
+                  <option value="puc">PUC</option>
+                  <option value="accessory">Accessory</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <button
+                type="button"
+                class="secondary-button filter-reset-button"
+                id="resetExpenseFilterButton"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>તારીખ</th>
+                    <th>પ્રકાર</th>
+                    <th>વિગત</th>
+                    <th>Odometer</th>
+                    <th>રકમ</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody id="expenseHistoryTableBody">
+                  <tr class="empty-table-row">
+                    <td colspan="6">કોઈ ખર્ચ નોંધાયેલ નથી.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <!-- Maintenance section -->
+        <section id="maintenanceSection" class="page-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Service Records</p>
+              <h3>Service અને Maintenance</h3>
+              <p>Service, oil change, tyre અને repairનો record રાખો.</p>
+            </div>
+
+            <button
+              type="button"
+              class="primary-button"
+              id="maintenancePageAddButton"
+            >
+              + Service નોંધો
+            </button>
+          </div>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Maintenance Timeline</p>
+                <h3>Service History</h3>
+              </div>
+            </div>
+
+            <div id="maintenanceTimeline" class="maintenance-timeline">
+              <div class="empty-state">
+                <div class="empty-icon">⚙</div>
+                <h4>કોઈ service record નથી</h4>
+                <p>પહેલી service અથવા oil changeની entry ઉમેરો.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Reports section -->
+        <section id="reportsSection" class="page-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Expense Analysis</p>
+              <h3>Monthly Report</h3>
+              <p>Scooter કેટલા KM ચાલ્યું અને કેટલો ખર્ચ થયો તે જુઓ.</p>
+            </div>
+
+            <div>
+              <label for="reportMonthFilter" class="sr-only">
+                Report month
+              </label>
+
+              <input type="month" id="reportMonthFilter" />
+            </div>
+          </div>
+
+          <div class="report-grid">
+            <article class="panel report-overview">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Selected Month</p>
+                  <h3>મહિનાનો સારાંશ</h3>
+                </div>
+              </div>
+
+              <div class="report-list">
+                <div>
+                  <span>કુલ Distance</span>
+                  <strong id="reportTotalKm">0 KM</strong>
+                </div>
+
+                <div>
+                  <span>કુલ ખર્ચ</span>
+                  <strong id="reportTotalExpense">₹0</strong>
+                </div>
+
+                <div>
+                  <span>Petrol ખર્ચ</span>
+                  <strong id="reportPetrolExpense">₹0</strong>
+                </div>
+
+                <div>
+                  <span>Service ખર્ચ</span>
+                  <strong id="reportServiceExpense">₹0</strong>
+                </div>
+
+                <div>
+                  <span>Cost per KM</span>
+                  <strong id="reportCostPerKm">₹0.00</strong>
+                </div>
+
+                <div>
+                  <span>Average Mileage</span>
+                  <strong id="reportMileage">0 KM/L</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Expense Breakdown</p>
+                  <h3>ખર્ચ ક્યાં થયો?</h3>
+                </div>
+              </div>
+
+              <div id="expenseBreakdown" class="expense-breakdown">
+                <div class="breakdown-row">
+                  <div class="breakdown-label">
+                    <span>Petrol</span>
+                    <strong id="petrolBreakdownAmount">₹0</strong>
+                  </div>
+
+                  <div class="progress-track">
+                    <div
+                      id="petrolBreakdownBar"
+                      class="progress-bar petrol-bar"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="breakdown-row">
+                  <div class="breakdown-label">
+                    <span>Service</span>
+                    <strong id="serviceBreakdownAmount">₹0</strong>
+                  </div>
+
+                  <div class="progress-track">
+                    <div
+                      id="serviceBreakdownBar"
+                      class="progress-bar service-bar"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="breakdown-row">
+                  <div class="breakdown-label">
+                    <span>Repair & Other</span>
+                    <strong id="otherBreakdownAmount">₹0</strong>
+                  </div>
+
+                  <div class="progress-track">
+                    <div
+                      id="otherBreakdownBar"
+                      class="progress-bar other-bar"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Scooters section -->
+        <section id="scootersSection" class="page-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Vehicle Manager</p>
+              <h3>મારા Scooter</h3>
+              <p>એકથી વધારે scooter હોય તો દરેકનો અલગ હિસાબ રાખો.</p>
+            </div>
+
+            <button
+              type="button"
+              class="primary-button"
+              id="scootersPageAddButton"
+            >
+              + Scooter ઉમેરો
+            </button>
+          </div>
+
+          <div id="scooterCardsContainer" class="scooter-grid">
+            <div class="empty-state full-width">
+              <div class="empty-icon">+</div>
+              <h4>હજી કોઈ scooter ઉમેરેલ નથી</h4>
+              <p>શરૂઆત કરવા માટે તમારા scooterની માહિતી ઉમેરો.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Toast message -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Add scooter dialog -->
+    <dialog id="scooterDialog" class="app-dialog">
+      <form id="scooterForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Vehicle Details</p>
+            <h3 id="scooterDialogTitle">નવું Scooter ઉમેરો</h3>
+          </div>
+
+          <button
+            type="button"
+            class="dialog-close-button"
+            data-close-dialog="scooterDialog"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <input type="hidden" id="scooterEditId" />
+
+          <div class="form-group">
+            <label for="scooterName"> Scooterનું નામ * </label>
+
+            <input
+              type="text"
+              id="scooterName"
+              placeholder="ઉદાહરણ: Activa 6G"
+              required
+            />
+          </div>
+
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="scooterNumber"> Registration Number </label>
+
+              <input
+                type="text"
+                id="scooterNumber"
+                placeholder="GJ 03 AB 1234"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="scooterModelYear"> Model Year </label>
+
+              <input
+                type="number"
+                id="scooterModelYear"
+                min="1990"
+                max="2100"
+                placeholder="2024"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="scooterInitialKm"> હાલનું Odometer Reading * </label>
+
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="scooterInitialKm"
+                min="0"
+                step="0.1"
+                placeholder="18456"
+                required
+              />
+
+              <span>KM</span>
+            </div>
+
+            <small>
+              આ reading scooterની starting reading તરીકે save થશે.
+            </small>
+          </div>
+
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="serviceIntervalKm"> Service Interval </label>
+
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="serviceIntervalKm"
+                  min="1"
+                  value="3000"
+                />
+
+                <span>KM</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="oilIntervalKm"> Oil Change Interval </label>
+
+              <div class="input-with-unit">
+                <input type="number" id="oilIntervalKm" min="1" value="3000" />
+
+                <span>KM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-dialog="scooterDialog"
+          >
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button">Scooter Save કરો</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Add KM reading dialog -->
+    <dialog id="rideDialog" class="app-dialog">
+      <form id="rideForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Daily Ride</p>
+            <h3>નવું KM Reading</h3>
+          </div>
+
+          <button
+            type="button"
+            class="dialog-close-button"
+            data-close-dialog="rideDialog"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <div class="current-reading-box">
+            <span>Previous Odometer</span>
+
+            <strong> <span id="ridePreviousKm">0</span> KM </strong>
+          </div>
+
+          <div class="form-group">
+            <label for="rideCurrentKm"> Current Odometer Reading * </label>
+
+            <div class="input-with-unit">
+              <input
+                type="number"
+                id="rideCurrentKm"
+                min="0"
+                step="0.1"
+                placeholder="18468"
+                required
+              />
+
+              <span>KM</span>
+            </div>
+          </div>
+
+          <div id="rideCalculationPreview" class="calculation-preview">
+            Current KM દાખલ કરવાથી ride distance અહીં દેખાશે.
+          </div>
+
+          <div class="form-group">
+            <label for="rideDateTime"> Date & Time * </label>
+
+            <input type="datetime-local" id="rideDateTime" required />
+          </div>
+
+          <div class="form-group">
+            <label for="rideNote"> સ્થળ અથવા નોંધ </label>
+
+            <input
+              type="text"
+              id="rideNote"
+              placeholder="ઉદાહરણ: Office, Home, Market"
+            />
+          </div>
+
+          <p id="rideFormError" class="form-error"></p>
+        </div>
+
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-dialog="rideDialog"
+          >
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button">KM Save કરો</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Add petrol dialog -->
+    <dialog id="petrolDialog" class="app-dialog">
+      <form id="petrolForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Fuel Record</p>
+            <h3>Petrol Entry</h3>
+          </div>
+
+          <button
+            type="button"
+            class="dialog-close-button"
+            data-close-dialog="petrolDialog"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="petrolDate"> તારીખ * </label>
+
+              <input type="date" id="petrolDate" required />
+            </div>
+
+            <div class="form-group">
+              <label for="petrolOdometer"> Odometer KM * </label>
+
+              <input
+                type="number"
+                id="petrolOdometer"
+                min="0"
+                step="0.1"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="petrolLitres"> Petrol Litres * </label>
+
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="petrolLitres"
+                  min="0.01"
+                  step="0.01"
+                  placeholder="4.50"
+                  required
+                />
+
+                <span>L</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="petrolRate"> Rate per Litre </label>
+
+              <div class="input-with-unit currency-unit">
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="petrolRate"
+                  min="0"
+                  step="0.01"
+                  placeholder="95.00"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="petrolAmount"> Total Amount * </label>
+
+            <div class="input-with-unit currency-unit">
+              <span>₹</span>
+
+              <input
+                type="number"
+                id="petrolAmount"
+                min="0"
+                step="0.01"
+                placeholder="500"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="petrolFullTank" />
+
+            <label for="petrolFullTank"> Full tank ભરાવ્યું છે </label>
+          </div>
+
+          <div class="form-group">
+            <label for="petrolNote"> નોંધ </label>
+
+            <input
+              type="text"
+              id="petrolNote"
+              placeholder="ઉદાહરણ: Indian Oil, Rajkot"
+            />
+          </div>
+
+          <p id="petrolFormError" class="form-error"></p>
+        </div>
+
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-dialog="petrolDialog"
+          >
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button">Petrol Save કરો</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Add expense dialog -->
+    <dialog id="expenseDialog" class="app-dialog">
+      <form id="expenseForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Expense Record</p>
+            <h3>નવો ખર્ચ ઉમેરો</h3>
+          </div>
+
+          <button
+            type="button"
+            class="dialog-close-button"
+            data-close-dialog="expenseDialog"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="expenseDate"> તારીખ * </label>
+
+              <input type="date" id="expenseDate" required />
+            </div>
+
+            <div class="form-group">
+              <label for="expenseType"> ખર્ચનો પ્રકાર * </label>
+
+              <select id="expenseType" required>
+                <option value="">પસંદ કરો</option>
+                <option value="repair">Repair</option>
+                <option value="insurance">Insurance</option>
+                <option value="puc">PUC</option>
+                <option value="accessory">Accessory</option>
+                <option value="washing">Washing</option>
+                <option value="parking">Parking</option>
+                <option value="fine">Fine</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="expenseAmount"> Amount * </label>
+
+              <div class="input-with-unit currency-unit">
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="expenseAmount"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="expenseOdometer"> Odometer KM </label>
+
+              <input type="number" id="expenseOdometer" min="0" step="0.1" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="expenseDescription"> ખર્ચની વિગત * </label>
+
+            <input
+              type="text"
+              id="expenseDescription"
+              placeholder="ખર્ચ શેના માટે થયો?"
+              required
+            />
+          </div>
+
+          <p id="expenseFormError" class="form-error"></p>
+        </div>
+
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-dialog="expenseDialog"
+          >
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button">ખર્ચ Save કરો</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Add service dialog -->
+    <dialog id="serviceDialog" class="app-dialog">
+      <form id="serviceForm">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Maintenance Record</p>
+            <h3>Service નોંધો</h3>
+          </div>
+
+          <button
+            type="button"
+            class="dialog-close-button"
+            data-close-dialog="serviceDialog"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="serviceDate"> તારીખ * </label>
+
+              <input type="date" id="serviceDate" required />
+            </div>
+
+            <div class="form-group">
+              <label for="serviceType"> Service Type * </label>
+
+              <select id="serviceType" required>
+                <option value="">પસંદ કરો</option>
+                <option value="general-service">General Service</option>
+                <option value="oil-change">Engine Oil Change</option>
+                <option value="tyre">Tyre Work</option>
+                <option value="battery">Battery</option>
+                <option value="brake">Brake Work</option>
+                <option value="repair">Repair</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="two-column-form">
+            <div class="form-group">
+              <label for="serviceOdometer"> Service Odometer * </label>
+
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  id="serviceOdometer"
+                  min="0"
+                  step="0.1"
+                  required
+                />
+
+                <span>KM</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="serviceAmount"> Service Cost * </label>
+
+              <div class="input-with-unit currency-unit">
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  id="serviceAmount"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="serviceDescription"> કરાવેલા કામની વિગત * </label>
+
+            <textarea
+              id="serviceDescription"
+              rows="4"
+              placeholder="ઉદાહરણ: Engine oil, air filter અને brake setting"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="serviceCenter"> Service Center / Mechanic </label>
+
+            <input
+              type="text"
+              id="serviceCenter"
+              placeholder="Service centerનું નામ"
+            />
+          </div>
+
+          <p id="serviceFormError" class="form-error"></p>
+        </div>
+
+        <div class="dialog-footer">
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-dialog="serviceDialog"
+          >
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button">Service Save કરો</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Delete confirmation dialog -->
+    <dialog id="deleteDialog" class="app-dialog small-dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow danger-text">Delete Record</p>
+          <h3>આ record delete કરવો છે?</h3>
+        </div>
+
+        <button
+          type="button"
+          class="dialog-close-button"
+          data-close-dialog="deleteDialog"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="dialog-body">
+        <p>Delete કર્યા પછી આ record પાછો મેળવી શકાશે નહીં.</p>
+      </div>
+
+      <div class="dialog-footer">
+        <button
+          type="button"
+          class="secondary-button"
+          data-close-dialog="deleteDialog"
+        >
+          Cancel
+        </button>
+
+        <button type="button" class="danger-button" id="confirmDeleteButton">
+          Delete
+        </button>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -5,7 +5,7 @@
     scooter-tracker-v1 ને v2, v3 એમ બદલતા રહેવું.
 */
 
-const CACHE_NAME = "scooter-tracker-v2";
+const CACHE_NAME = "scooter-tracker-v3";
 
 const APP_FILES = [
   "./",

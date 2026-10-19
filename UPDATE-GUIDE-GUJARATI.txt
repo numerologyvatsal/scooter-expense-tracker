@@ -6,7 +6,9 @@ SCOOTER EXPENSE TRACKER — UPDATE GUIDE
 2. Reportsમાં તારીખ પ્રમાણે ચાલેલા KMનો chart ઉમેરાયો છે.
 3. સૌથી વધુ અને સૌથી ઓછું ચાલેલી તારીખ અલગ દેખાશે.
 4. Mobile અને laptop બંને માટે responsive chart છે.
-5. Offline cache version v2 કરવામાં આવ્યું છે.
+5. Overall mileage monthly filterથી અલગ રાખવામાં આવ્યું છે.
+6. Cost per KMની calculation reportમાં સ્પષ્ટ બતાવવામાં આવી છે.
+7. Offline cache version v3 કરવામાં આવ્યું છે.
 
 જૂનો data સુરક્ષિત રાખવા માટે:
 - GitHub repository અને GitHub Pagesની link/domain એ જ રાખવી.
@@ -29,4 +31,6 @@ Update કરવાની રીત:
 નોંધ:
 - Website files replace અથવા git push કરવાથી local entries delete થતી નથી.
 - Browser/site storage clear કરવાથી local entries delete થઈ શકે છે.
+- Overall mileage બધા petrol records પરથી ચાલતું રહેશે અને month filterથી બદલાશે નહીં.
 - Full tank વગરનું mileage અંદાજિત છે. Full tank entries હોય ત્યારે accuracy વધુ સારી રહે છે.
+- Cost per KM = પસંદ કરેલા મહિનાનો કુલ ખર્ચ ÷ તે મહિનાના કુલ KM.

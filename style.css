@@ -1111,6 +1111,10 @@ tbody tr:last-child td {
   line-height: 1.55;
 }
 
+.cost-per-km-note {
+  border-left: 3px solid #3b82f6;
+}
+
 .expense-breakdown {
   display: grid;
   gap: 25px;

@@ -1744,15 +1744,14 @@ function renderReports() {
 
   const costPerKm = totalKm > 0 ? totalExpense / totalKm : 0;
 
-  const mileage = calculateMileage(
-    getScooterExpenses(scooter.id).filter(
-      (expense) => expense.type === "petrol",
-    ),
+  // Overall mileage intentionally uses every petrol entry for this scooter.
+  // It does not depend on the selected monthly report filter.
+  const allPetrolExpenses = getScooterExpenses(scooter.id).filter(
+    (expense) => expense.type === "petrol",
   );
 
-  const petrolEntryCount = getScooterExpenses(scooter.id).filter(
-    (expense) => expense.type === "petrol",
-  ).length;
+  const mileage = calculateMileage(allPetrolExpenses);
+  const petrolEntryCount = allPetrolExpenses.length;
 
   document.getElementById("reportTotalKm").textContent =
     `${formatNumber(totalKm)} KM`;
@@ -1769,13 +1768,18 @@ function renderReports() {
   document.getElementById("reportCostPerKm").textContent =
     formatCurrency(costPerKm);
 
+  document.getElementById("costPerKmNote").textContent =
+    totalKm > 0
+      ? `${formatCurrency(totalExpense)} કુલ ખર્ચ ÷ ${formatNumber(totalKm)} KM = ${formatCurrency(costPerKm)} પ્રતિ KM (પસંદ કરેલો મહિનો).`
+      : "Cost per KM માટે પસંદ કરેલા મહિનામાં KM entry હોવી જરૂરી છે.";
+
   document.getElementById("reportMileage").textContent =
     mileage > 0 ? `${formatNumber(mileage)} KM/L` : "Not enough data";
 
   document.getElementById("mileageNote").textContent =
     petrolEntryCount >= 2
-      ? "આ mileage petrol entriesના odometer અને litres પરથી અંદાજિત છે. Full tank entries હોય તો પરિણામ વધુ accurate રહે છે."
-      : "Mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો.";
+      ? "આ scooterનું overall mileage છે—month filterથી બદલાતું નથી. Petrol entries વચ્ચેના કુલ KM ÷ ત્યારબાદ ભરાયેલા કુલ litres પરથી અંદાજ આવે છે. Full tank entries હોય તો accuracy વધુ રહે છે."
+      : "Overall mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો. આ month filter પર આધારિત નથી.";
 
   document.getElementById("petrolBreakdownAmount").textContent =
     formatCurrency(petrolAmount);
@@ -1946,8 +1950,10 @@ function resetReports() {
 
   document.getElementById("reportTotalKm").textContent = "0 KM";
   document.getElementById("reportMileage").textContent = "0 KM/L";
+  document.getElementById("costPerKmNote").textContent =
+    "Cost per KM માટે પસંદ કરેલા મહિનામાં KM entry હોવી જરૂરી છે.";
   document.getElementById("mileageNote").textContent =
-    "Mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો.";
+    "Overall mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો. આ month filter પર આધારિત નથી.";
 
   zeroCurrencyIds.forEach((id) => {
     document.getElementById(id).textContent = "₹0";

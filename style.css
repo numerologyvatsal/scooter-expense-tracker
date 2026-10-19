@@ -1115,6 +1115,10 @@ tbody tr:last-child td {
   border-left: 3px solid #3b82f6;
 }
 
+.overall-cost-per-km-note {
+  border-left: 3px solid #8b5cf6;
+}
+
 .expense-breakdown {
   display: grid;
   gap: 25px;

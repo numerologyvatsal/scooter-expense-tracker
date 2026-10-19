@@ -1716,15 +1716,19 @@ function renderReports() {
 
   const selectedMonth = reportMonthInput.value;
 
-  const rides = getScooterRides(scooter.id).filter(
+  const allRides = getScooterRides(scooter.id);
+  const allExpenses = getScooterExpenses(scooter.id);
+  const allServices = getScooterServices(scooter.id);
+
+  const rides = allRides.filter(
     (ride) => ride.dateTime.slice(0, 7) === selectedMonth,
   );
 
-  const expenses = getScooterExpenses(scooter.id).filter(
+  const expenses = allExpenses.filter(
     (expense) => expense.date.slice(0, 7) === selectedMonth,
   );
 
-  const services = getScooterServices(scooter.id).filter(
+  const services = allServices.filter(
     (service) => service.date.slice(0, 7) === selectedMonth,
   );
 
@@ -1744,9 +1748,15 @@ function renderReports() {
 
   const costPerKm = totalKm > 0 ? totalExpense / totalKm : 0;
 
+  const overallTotalKm = sumValues(allRides, "distance");
+  const overallExpense =
+    sumValues(allExpenses, "amount") + sumValues(allServices, "amount");
+  const overallCostPerKm =
+    overallTotalKm > 0 ? overallExpense / overallTotalKm : 0;
+
   // Overall mileage intentionally uses every petrol entry for this scooter.
   // It does not depend on the selected monthly report filter.
-  const allPetrolExpenses = getScooterExpenses(scooter.id).filter(
+  const allPetrolExpenses = allExpenses.filter(
     (expense) => expense.type === "petrol",
   );
 
@@ -1768,10 +1778,18 @@ function renderReports() {
   document.getElementById("reportCostPerKm").textContent =
     formatCurrency(costPerKm);
 
+  document.getElementById("reportOverallCostPerKm").textContent =
+    formatCurrency(overallCostPerKm);
+
   document.getElementById("costPerKmNote").textContent =
     totalKm > 0
       ? `${formatCurrency(totalExpense)} કુલ ખર્ચ ÷ ${formatNumber(totalKm)} KM = ${formatCurrency(costPerKm)} પ્રતિ KM (પસંદ કરેલો મહિનો).`
       : "Cost per KM માટે પસંદ કરેલા મહિનામાં KM entry હોવી જરૂરી છે.";
+
+  document.getElementById("overallCostPerKmNote").textContent =
+    overallTotalKm > 0
+      ? `${formatCurrency(overallExpense)} અત્યાર સુધીનો કુલ ખર્ચ ÷ ${formatNumber(overallTotalKm)} કુલ KM = ${formatCurrency(overallCostPerKm)} પ્રતિ KM.`
+      : "Overall Cost per KM માટે ઓછામાં ઓછી એક KM entry હોવી જરૂરી છે.";
 
   document.getElementById("reportMileage").textContent =
     mileage > 0 ? `${formatNumber(mileage)} KM/L` : "Not enough data";
@@ -1943,6 +1961,7 @@ function resetReports() {
     "reportPetrolExpense",
     "reportServiceExpense",
     "reportCostPerKm",
+    "reportOverallCostPerKm",
     "petrolBreakdownAmount",
     "serviceBreakdownAmount",
     "otherBreakdownAmount",
@@ -1952,6 +1971,8 @@ function resetReports() {
   document.getElementById("reportMileage").textContent = "0 KM/L";
   document.getElementById("costPerKmNote").textContent =
     "Cost per KM માટે પસંદ કરેલા મહિનામાં KM entry હોવી જરૂરી છે.";
+  document.getElementById("overallCostPerKmNote").textContent =
+    "Overall Cost per KM માટે ઓછામાં ઓછી એક KM entry હોવી જરૂરી છે.";
   document.getElementById("mileageNote").textContent =
     "Overall mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો. આ month filter પર આધારિત નથી.";
 

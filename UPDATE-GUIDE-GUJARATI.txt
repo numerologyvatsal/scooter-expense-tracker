@@ -9,7 +9,8 @@ SCOOTER EXPENSE TRACKER — UPDATE GUIDE
 5. Overall mileage monthly filterથી અલગ રાખવામાં આવ્યું છે.
 6. Cost per KMની calculation reportમાં સ્પષ્ટ બતાવવામાં આવી છે.
 7. Monthly અને અત્યાર સુધીના Overall Cost per KM બંને ઉમેરવામાં આવ્યા છે.
-8. Offline cache version v4 કરવામાં આવ્યું છે.
+8. Dashboard summary cards પર double tapથી entry-wise details popup ઉમેરાયું છે.
+9. Offline cache version v5 કરવામાં આવ્યું છે.
 
 જૂનો data સુરક્ષિત રાખવા માટે:
 - GitHub repository અને GitHub Pagesની link/domain એ જ રાખવી.

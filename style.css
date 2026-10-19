@@ -589,6 +589,17 @@ button:disabled {
   box-shadow: var(--shadow-medium);
 }
 
+.interactive-summary-card {
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.interactive-summary-card:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 3px;
+}
+
 .summary-card::after {
   position: absolute;
   right: -32px;
@@ -669,6 +680,17 @@ button:disabled {
   z-index: 1;
   color: var(--text-secondary);
   font-size: 12px;
+}
+
+.tap-hint {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  margin-top: 9px;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .compact-grid {
@@ -1545,6 +1567,105 @@ tbody tr:last-child td {
   background: var(--surface-soft);
 }
 
+.dashboard-detail-dialog {
+  width: min(650px, calc(100% - 28px));
+}
+
+.dashboard-detail-body {
+  max-height: min(62vh, 560px);
+}
+
+.detail-total-card {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 16px;
+  padding: 17px;
+  border-radius: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #1d4ed8, #4338ca);
+}
+
+.detail-total-card span,
+.detail-total-card small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.detail-total-card strong {
+  font-size: 24px;
+}
+
+.detail-entry-list {
+  display: grid;
+  gap: 9px;
+}
+
+.detail-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.detail-entry strong,
+.detail-entry small {
+  display: block;
+}
+
+.detail-entry strong {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.detail-entry small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.detail-entry b {
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.detail-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.detail-breakdown-grid > div {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.detail-breakdown-grid span,
+.detail-breakdown-grid strong {
+  display: block;
+}
+
+.detail-breakdown-grid span {
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.detail-breakdown-grid strong {
+  font-size: 14px;
+}
+
+.detail-empty-state {
+  padding: 32px 15px;
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 13px;
+}
+
 /* =====================================================
    FORMS
 ===================================================== */
@@ -1999,6 +2120,10 @@ textarea:focus {
   }
 
   .compact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-breakdown-grid {
     grid-template-columns: 1fr;
   }
 

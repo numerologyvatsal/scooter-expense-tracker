@@ -159,7 +159,13 @@
 
           <!-- Summary cards -->
           <div class="summary-grid">
-            <article class="summary-card blue-card">
+            <article
+              class="summary-card blue-card interactive-summary-card"
+              data-dashboard-detail="todayKm"
+              role="button"
+              tabindex="0"
+              aria-label="આજના KMની વિગતો જોવા double tap કરો"
+            >
               <div class="card-heading">
                 <span>આજના KM</span>
                 <span class="card-icon">↗</span>
@@ -167,9 +173,16 @@
 
               <strong id="todayKmValue">0 KM</strong>
               <p id="todayRideCount">આજે કોઈ ride નથી</p>
+              <span class="tap-hint">Double tap for details</span>
             </article>
 
-            <article class="summary-card green-card">
+            <article
+              class="summary-card green-card interactive-summary-card"
+              data-dashboard-detail="monthKm"
+              role="button"
+              tabindex="0"
+              aria-label="આ મહિનાના KMની વિગતો જોવા double tap કરો"
+            >
               <div class="card-heading">
                 <span>આ મહિનાના KM</span>
                 <span class="card-icon">KM</span>
@@ -177,9 +190,16 @@
 
               <strong id="monthKmValue">0 KM</strong>
               <p>Current month distance</p>
+              <span class="tap-hint">Double tap for details</span>
             </article>
 
-            <article class="summary-card orange-card">
+            <article
+              class="summary-card orange-card interactive-summary-card"
+              data-dashboard-detail="monthExpense"
+              role="button"
+              tabindex="0"
+              aria-label="આ મહિનાના ખર્ચની વિગતો જોવા double tap કરો"
+            >
               <div class="card-heading">
                 <span>આ મહિનાનો ખર્ચ</span>
                 <span class="card-icon">₹</span>
@@ -187,9 +207,16 @@
 
               <strong id="monthExpenseValue">₹0</strong>
               <p id="monthExpenseCount">કોઈ ખર્ચ નોંધાયેલ નથી</p>
+              <span class="tap-hint">Double tap for details</span>
             </article>
 
-            <article class="summary-card purple-card">
+            <article
+              class="summary-card purple-card interactive-summary-card"
+              data-dashboard-detail="runningCost"
+              role="button"
+              tabindex="0"
+              aria-label="Running Costની વિગતો જોવા double tap કરો"
+            >
               <div class="card-heading">
                 <span>Running Cost</span>
                 <span class="card-icon">₹/KM</span>
@@ -197,6 +224,7 @@
 
               <strong id="costPerKmValue">₹0.00</strong>
               <p>દરેક KM પાછળનો ખર્ચ</p>
+              <span class="tap-hint">Double tap for details</span>
             </article>
           </div>
 
@@ -1315,6 +1343,39 @@
           <button type="submit" class="primary-button">Service Save કરો</button>
         </div>
       </form>
+    </dialog>
+
+    <!-- Dashboard summary detail dialog -->
+    <dialog id="dashboardDetailDialog" class="app-dialog dashboard-detail-dialog">
+      <div class="dialog-header">
+        <div>
+          <p class="eyebrow">Dashboard Details</p>
+          <h3 id="dashboardDetailTitle">વિગતો</h3>
+        </div>
+
+        <button
+          type="button"
+          class="dialog-close-button"
+          data-close-dialog="dashboardDetailDialog"
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="dialog-body dashboard-detail-body" id="dashboardDetailBody">
+        <div class="detail-empty-state">કોઈ વિગત ઉપલબ્ધ નથી.</div>
+      </div>
+
+      <div class="dialog-footer">
+        <button
+          type="button"
+          class="primary-button"
+          data-close-dialog="dashboardDetailDialog"
+        >
+          Close
+        </button>
+      </div>
     </dialog>
 
     <!-- Delete confirmation dialog -->

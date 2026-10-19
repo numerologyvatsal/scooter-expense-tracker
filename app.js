@@ -120,6 +120,7 @@ function registerEventListeners() {
   registerFormSubmissions();
   registerFilters();
   registerDynamicActions();
+  registerDashboardDetailCards();
 
   document
     .getElementById("rideCurrentKm")
@@ -174,6 +175,31 @@ function registerDialogButtons() {
   document.querySelectorAll("[data-close-dialog]").forEach((button) => {
     button.addEventListener("click", () => {
       closeDialog(button.dataset.closeDialog);
+    });
+  });
+}
+
+function registerDashboardDetailCards() {
+  document.querySelectorAll("[data-dashboard-detail]").forEach((card) => {
+    let lastTapTime = 0;
+
+    card.addEventListener("click", () => {
+      const currentTapTime = Date.now();
+
+      if (currentTapTime - lastTapTime <= 450) {
+        lastTapTime = 0;
+        openDashboardDetail(card.dataset.dashboardDetail);
+        return;
+      }
+
+      lastTapTime = currentTapTime;
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openDashboardDetail(card.dataset.dashboardDetail);
+      }
     });
   });
 }
@@ -1090,6 +1116,168 @@ function resetDashboard() {
             </td>
         </tr>
     `;
+}
+
+function openDashboardDetail(detailType) {
+  const scooter = getActiveScooter();
+
+  if (!scooter) {
+    showToast("પહેલા scooter પસંદ કરો.", "error");
+    return;
+  }
+
+  const rides = getScooterRides(scooter.id);
+  const expenses = getScooterExpenses(scooter.id);
+  const services = getScooterServices(scooter.id);
+  const todayKey = getLocalDateValue();
+  const currentMonth = todayKey.slice(0, 7);
+  const titleElement = document.getElementById("dashboardDetailTitle");
+  const bodyElement = document.getElementById("dashboardDetailBody");
+
+  if (detailType === "todayKm") {
+    const todayRides = rides
+      .filter((ride) => String(ride.dateTime).slice(0, 10) === todayKey)
+      .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+    const total = sumValues(todayRides, "distance");
+
+    titleElement.textContent = "આજના KMની વિગતો";
+    bodyElement.innerHTML = buildDashboardDetailList(
+      `${formatNumber(total)} KM`,
+      `${todayRides.length} ride`,
+      todayRides.map((ride) => ({
+        title: formatDateTime(ride.dateTime),
+        subtitle: `${formatNumber(ride.previousKm)} → ${formatNumber(ride.currentKm)} KM${ride.note ? ` · ${escapeHtml(ride.note)}` : ""}`,
+        value: `${formatNumber(ride.distance)} KM`,
+      })),
+      "આજે કોઈ ride નોંધાયેલ નથી.",
+    );
+  } else if (detailType === "monthKm") {
+    const monthRides = rides.filter(
+      (ride) => String(ride.dateTime).slice(0, 7) === currentMonth,
+    );
+    const dailyTotals = monthRides.reduce((totals, ride) => {
+      const date = String(ride.dateTime).slice(0, 10);
+
+      if (!totals[date]) {
+        totals[date] = { distance: 0, count: 0 };
+      }
+
+      totals[date].distance += Number(ride.distance) || 0;
+      totals[date].count += 1;
+      return totals;
+    }, {});
+    const entries = Object.entries(dailyTotals)
+      .sort(([dateA], [dateB]) => dateB.localeCompare(dateA))
+      .map(([date, data]) => ({
+        title: formatDate(date),
+        subtitle: `${data.count} ride`,
+        value: `${formatNumber(data.distance)} KM`,
+      }));
+    const total = sumValues(monthRides, "distance");
+
+    titleElement.textContent = "આ મહિનાના KMની વિગતો";
+    bodyElement.innerHTML = buildDashboardDetailList(
+      `${formatNumber(total)} KM`,
+      `${entries.length} active days`,
+      entries,
+      "આ મહિનામાં કોઈ ride નોંધાયેલ નથી.",
+    );
+  } else if (detailType === "monthExpense") {
+    const monthExpenses = expenses
+      .filter((expense) => String(expense.date).slice(0, 7) === currentMonth)
+      .map((expense) => ({
+        date: expense.date,
+        amount: Number(expense.amount) || 0,
+        title:
+          expense.type === "petrol"
+            ? "Petrol"
+            : getExpenseTypeLabel(expense.type),
+        subtitle: `${formatDate(expense.date)} · ${escapeHtml(expense.description || "Expense")}`,
+        value: formatCurrency(expense.amount),
+      }));
+    const monthServices = services
+      .filter((service) => String(service.date).slice(0, 7) === currentMonth)
+      .map((service) => ({
+        date: service.date,
+        amount: Number(service.amount) || 0,
+        title: getServiceTypeLabel(service.type),
+        subtitle: `${formatDate(service.date)} · ${escapeHtml(service.description || "Service")}`,
+        value: formatCurrency(service.amount),
+      }));
+    const entries = [...monthExpenses, ...monthServices].sort(
+      (a, b) => new Date(b.date) - new Date(a.date),
+    );
+    const total =
+      sumValues(monthExpenses, "amount") + sumValues(monthServices, "amount");
+
+    titleElement.textContent = "આ મહિનાના ખર્ચની વિગતો";
+    bodyElement.innerHTML = buildDashboardDetailList(
+      formatCurrency(total),
+      `${entries.length} entries`,
+      entries,
+      "આ મહિનામાં કોઈ ખર્ચ નોંધાયેલ નથી.",
+    );
+  } else if (detailType === "runningCost") {
+    const totalKm = roundNumber(scooter.currentKm - scooter.startingKm);
+    const petrolTotal = sumValues(
+      expenses.filter((expense) => expense.type === "petrol"),
+      "amount",
+    );
+    const otherTotal = sumValues(
+      expenses.filter((expense) => expense.type !== "petrol"),
+      "amount",
+    );
+    const serviceTotal = sumValues(services, "amount");
+    const totalExpense = petrolTotal + otherTotal + serviceTotal;
+    const costPerKm = totalKm > 0 ? totalExpense / totalKm : 0;
+
+    titleElement.textContent = "Running Costની વિગતો";
+    bodyElement.innerHTML = `
+      <div class="detail-total-card">
+        <span>Overall Running Cost</span>
+        <strong>${formatCurrency(costPerKm)} / KM</strong>
+        <small>${formatCurrency(totalExpense)} કુલ ખર્ચ ÷ ${formatNumber(totalKm)} KM</small>
+      </div>
+      <div class="detail-breakdown-grid">
+        <div><span>Petrol</span><strong>${formatCurrency(petrolTotal)}</strong></div>
+        <div><span>Service</span><strong>${formatCurrency(serviceTotal)}</strong></div>
+        <div><span>Repair & Other</span><strong>${formatCurrency(otherTotal)}</strong></div>
+        <div><span>Total KM</span><strong>${formatNumber(totalKm)} KM</strong></div>
+      </div>
+    `;
+  } else {
+    return;
+  }
+
+  openDialog("dashboardDetailDialog");
+}
+
+function buildDashboardDetailList(total, meta, entries, emptyMessage) {
+  const entryMarkup =
+    entries.length > 0
+      ? entries
+          .map(
+            (entry) => `
+              <div class="detail-entry">
+                <div>
+                  <strong>${entry.title}</strong>
+                  <small>${entry.subtitle}</small>
+                </div>
+                <b>${entry.value}</b>
+              </div>
+            `,
+          )
+          .join("")
+      : `<div class="detail-empty-state">${emptyMessage}</div>`;
+
+  return `
+    <div class="detail-total-card">
+      <span>Total</span>
+      <strong>${total}</strong>
+      <small>${meta}</small>
+    </div>
+    <div class="detail-entry-list">${entryMarkup}</div>
+  `;
 }
 
 function renderRecentActivity(rides, expenses, services) {

@@ -1750,6 +1750,10 @@ function renderReports() {
     ),
   );
 
+  const petrolEntryCount = getScooterExpenses(scooter.id).filter(
+    (expense) => expense.type === "petrol",
+  ).length;
+
   document.getElementById("reportTotalKm").textContent =
     `${formatNumber(totalKm)} KM`;
 
@@ -1768,6 +1772,11 @@ function renderReports() {
   document.getElementById("reportMileage").textContent =
     mileage > 0 ? `${formatNumber(mileage)} KM/L` : "Not enough data";
 
+  document.getElementById("mileageNote").textContent =
+    petrolEntryCount >= 2
+      ? "આ mileage petrol entriesના odometer અને litres પરથી અંદાજિત છે. Full tank entries હોય તો પરિણામ વધુ accurate રહે છે."
+      : "Mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો.";
+
   document.getElementById("petrolBreakdownAmount").textContent =
     formatCurrency(petrolAmount);
 
@@ -1782,48 +1791,39 @@ function renderReports() {
   setBreakdownBar("serviceBreakdownBar", serviceAmount, totalExpense);
 
   setBreakdownBar("otherBreakdownBar", otherAmount, totalExpense);
+
+  renderDailyKmChart(rides);
 }
 
 function calculateMileage(petrolEntries) {
-  const entries = [...petrolEntries].sort((a, b) => {
-    if (a.odometer !== b.odometer) {
-      return a.odometer - b.odometer;
+  const entries = [...petrolEntries]
+    .filter(
+      (entry) =>
+        Number.isFinite(Number(entry.odometer)) &&
+        Number.isFinite(Number(entry.litres)) &&
+        Number(entry.litres) > 0,
+    )
+    .sort((a, b) => {
+    if (Number(a.odometer) !== Number(b.odometer)) {
+      return Number(a.odometer) - Number(b.odometer);
     }
 
     return new Date(a.date) - new Date(b.date);
   });
 
-  const fullTankIndexes = [];
-
-  entries.forEach((entry, index) => {
-    if (entry.fullTank) {
-      fullTankIndexes.push(index);
-    }
-  });
-
-  if (fullTankIndexes.length < 2) {
+  if (entries.length < 2) {
     return 0;
   }
 
   let totalDistance = 0;
   let totalLitres = 0;
 
-  for (let i = 1; i < fullTankIndexes.length; i++) {
-    const previousIndex = fullTankIndexes[i - 1];
-    const currentIndex = fullTankIndexes[i];
-
+  for (let index = 1; index < entries.length; index++) {
+    const previousEntry = entries[index - 1];
+    const currentEntry = entries[index];
     const distance =
-      entries[currentIndex].odometer - entries[previousIndex].odometer;
-
-    let litres = 0;
-
-    for (
-      let entryIndex = previousIndex + 1;
-      entryIndex <= currentIndex;
-      entryIndex++
-    ) {
-      litres += Number(entries[entryIndex].litres) || 0;
-    }
+      Number(currentEntry.odometer) - Number(previousEntry.odometer);
+    const litres = Number(currentEntry.litres);
 
     if (distance > 0 && litres > 0) {
       totalDistance += distance;
@@ -1832,6 +1832,98 @@ function calculateMileage(petrolEntries) {
   }
 
   return totalLitres > 0 ? totalDistance / totalLitres : 0;
+}
+
+function renderDailyKmChart(rides) {
+  const chart = document.getElementById("dailyKmChart");
+  const highestElement = document.getElementById("highestKmDay");
+  const lowestElement = document.getElementById("lowestKmDay");
+  const activeDaysElement = document.getElementById("activeRideDays");
+
+  if (!chart || !highestElement || !lowestElement || !activeDaysElement) {
+    return;
+  }
+
+  const dailyTotals = rides.reduce((totals, ride) => {
+    const date = String(ride.dateTime || "").slice(0, 10);
+    const distance = Number(ride.distance) || 0;
+
+    if (date && distance > 0) {
+      totals[date] = (totals[date] || 0) + distance;
+    }
+
+    return totals;
+  }, {});
+
+  const dailyEntries = Object.entries(dailyTotals)
+    .map(([date, distance]) => ({ date, distance }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (dailyEntries.length === 0) {
+    chart.innerHTML =
+      '<div class="chart-empty-state">પસંદ કરેલા મહિનામાં ride entry નથી.</div>';
+    chart.setAttribute(
+      "aria-label",
+      "પસંદ કરેલા મહિનામાં કોઈ ride entry નથી",
+    );
+    highestElement.textContent = "—";
+    lowestElement.textContent = "—";
+    activeDaysElement.textContent = "0 દિવસ";
+    return;
+  }
+
+  const highest = dailyEntries.reduce((best, entry) =>
+    entry.distance > best.distance ? entry : best,
+  );
+
+  const lowest = dailyEntries.reduce((best, entry) =>
+    entry.distance < best.distance ? entry : best,
+  );
+
+  const maxDistance = highest.distance;
+
+  highestElement.textContent = `${formatChartDate(highest.date)} · ${formatNumber(highest.distance)} KM`;
+  lowestElement.textContent = `${formatChartDate(lowest.date)} · ${formatNumber(lowest.distance)} KM`;
+  activeDaysElement.textContent = `${dailyEntries.length} દિવસ`;
+
+  chart.innerHTML = dailyEntries
+    .map((entry) => {
+      const height = Math.max((entry.distance / maxDistance) * 100, 8);
+      const isHighest = entry.distance === highest.distance;
+      const isLowest = entry.distance === lowest.distance;
+      const stateClass = isHighest
+        ? "highest"
+        : isLowest
+          ? "lowest"
+          : "normal";
+      const accessibleLabel = `${formatChartDate(entry.date)}: ${formatNumber(entry.distance)} KM`;
+
+      return `
+        <div class="chart-column ${stateClass}" aria-label="${accessibleLabel}" title="${accessibleLabel}">
+          <span class="chart-value">${formatNumber(entry.distance)}</span>
+          <div class="chart-bar-track">
+            <div class="chart-bar" style="height: ${height}%"></div>
+          </div>
+          <span class="chart-date">${formatChartDate(entry.date)}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  chart.setAttribute(
+    "aria-label",
+    `${dailyEntries.length} દિવસના KMનો ચાર્ટ. સૌથી વધુ ${formatChartDate(highest.date)}ના રોજ ${formatNumber(highest.distance)} KM અને સૌથી ઓછું ${formatChartDate(lowest.date)}ના રોજ ${formatNumber(lowest.distance)} KM.`,
+  );
+}
+
+function formatChartDate(dateValue) {
+  const [year, month, day] = String(dateValue).split("-");
+
+  if (!year || !month || !day) {
+    return dateValue;
+  }
+
+  return `${day}/${month}`;
 }
 
 function setBreakdownBar(elementId, amount, total) {
@@ -1854,6 +1946,8 @@ function resetReports() {
 
   document.getElementById("reportTotalKm").textContent = "0 KM";
   document.getElementById("reportMileage").textContent = "0 KM/L";
+  document.getElementById("mileageNote").textContent =
+    "Mileage જોવા માટે ઓછામાં ઓછી 2 petrol entries ઉમેરો.";
 
   zeroCurrencyIds.forEach((id) => {
     document.getElementById(id).textContent = "₹0";
@@ -1864,6 +1958,8 @@ function resetReports() {
       document.getElementById(id).style.width = "0%";
     },
   );
+
+  renderDailyKmChart([]);
 }
 
 /* =====================================================

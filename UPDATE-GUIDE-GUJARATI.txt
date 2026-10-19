@@ -1,0 +1,32 @@
+SCOOTER EXPENSE TRACKER — UPDATE GUIDE
+======================================
+
+આ updateમાં શું નવું છે:
+1. Full Tank tick કર્યા વગર પણ 2 petrol entries પછી estimated mileage દેખાશે.
+2. Reportsમાં તારીખ પ્રમાણે ચાલેલા KMનો chart ઉમેરાયો છે.
+3. સૌથી વધુ અને સૌથી ઓછું ચાલેલી તારીખ અલગ દેખાશે.
+4. Mobile અને laptop બંને માટે responsive chart છે.
+5. Offline cache version v2 કરવામાં આવ્યું છે.
+
+જૂનો data સુરક્ષિત રાખવા માટે:
+- GitHub repository અને GitHub Pagesની link/domain એ જ રાખવી.
+- આ ZIPની files જૂના projectની files ઉપર replace કરવી.
+- Chrome/PWAમાં Clear data, Clear storage અથવા Reset site ન કરવું.
+- localStorage key "scooterExpenseTrackerDataV1" બદલવામાં આવી નથી.
+
+Update કરવાની રીત:
+1. ZIP extract કરો.
+2. અંદરની બધી files તમારા જૂના project folderમાં copy/replace કરો.
+3. VS Code terminalમાં નીચેના commands ચલાવો:
+
+   git add .
+   git commit -m "Add mileage update and daily KM chart"
+   git push
+
+4. GitHub Pages update થયા પછી mobileમાં internet ચાલુ રાખીને app એક વાર ખોલો.
+5. App સંપૂર્ણ close કરીને ફરી open કરો. ત્યારબાદ નવી version offline પણ ચાલશે.
+
+નોંધ:
+- Website files replace અથવા git push કરવાથી local entries delete થતી નથી.
+- Browser/site storage clear કરવાથી local entries delete થઈ શકે છે.
+- Full tank વગરનું mileage અંદાજિત છે. Full tank entries હોય ત્યારે accuracy વધુ સારી રહે છે.

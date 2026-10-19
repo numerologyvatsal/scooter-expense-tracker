@@ -623,6 +623,10 @@
                   <strong id="reportMileage">0 KM/L</strong>
                 </div>
               </div>
+
+              <p class="mileage-note" id="mileageNote">
+                Mileage માટે ઓછામાં ઓછી 2 petrol entries જરૂરી છે.
+              </p>
             </article>
 
             <article class="panel">
@@ -681,6 +685,52 @@
               </div>
             </article>
           </div>
+
+          <article class="panel daily-chart-panel">
+            <div class="panel-header chart-panel-header">
+              <div>
+                <p class="eyebrow">Daily Distance</p>
+                <h3>તારીખ પ્રમાણે ચાલેલા KM</h3>
+                <p>કઈ તારીખે scooter વધુ કે ઓછું ચાલ્યું તે જુઓ.</p>
+              </div>
+            </div>
+
+            <div class="chart-summary" aria-label="Daily distance summary">
+              <div class="chart-summary-card highest-card">
+                <span>સૌથી વધુ ચાલ્યું</span>
+                <strong id="highestKmDay">—</strong>
+              </div>
+
+              <div class="chart-summary-card lowest-card">
+                <span>સૌથી ઓછું ચાલ્યું</span>
+                <strong id="lowestKmDay">—</strong>
+              </div>
+
+              <div class="chart-summary-card">
+                <span>ચાલેલા કુલ દિવસ</span>
+                <strong id="activeRideDays">0 દિવસ</strong>
+              </div>
+            </div>
+
+            <div class="daily-chart-scroll">
+              <div
+                id="dailyKmChart"
+                class="daily-km-chart"
+                role="img"
+                aria-label="તારીખ પ્રમાણે ચાલેલા કિલોમીટરનો ચાર્ટ"
+              >
+                <div class="chart-empty-state">
+                  પસંદ કરેલા મહિનામાં ride entry નથી.
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-legend" aria-hidden="true">
+              <span><i class="legend-dot highest-dot"></i>સૌથી વધુ</span>
+              <span><i class="legend-dot lowest-dot"></i>સૌથી ઓછું</span>
+              <span><i class="legend-dot normal-dot"></i>બીજા દિવસ</span>
+            </div>
+          </article>
         </section>
 
         <!-- Scooters section -->

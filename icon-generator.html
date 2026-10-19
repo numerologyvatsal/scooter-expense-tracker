@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Scooter Tracker Icon Generator</title>
+
+    <style>
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        margin: 0;
+        background: #f1f5f9;
+        color: #0f172a;
+        font-family: Arial, sans-serif;
+      }
+
+      .panel {
+        width: min(420px, calc(100% - 30px));
+        padding: 28px;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+        text-align: center;
+      }
+
+      canvas {
+        width: 180px;
+        height: 180px;
+        margin: 20px 0;
+        border-radius: 36px;
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.25);
+      }
+
+      .buttons {
+        display: grid;
+        gap: 12px;
+      }
+
+      button {
+        min-height: 46px;
+        border: 0;
+        border-radius: 12px;
+        color: white;
+        background: #2563eb;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      p {
+        color: #64748b;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="panel">
+      <h2>Scooter Tracker Icons</h2>
+
+      <p>બંને buttons દબાવીને icons download કરો.</p>
+
+      <canvas id="previewCanvas" width="512" height="512"></canvas>
+
+      <div class="buttons">
+        <button type="button" onclick="downloadIcon(192)">
+          Download icon-192.png
+        </button>
+
+        <button type="button" onclick="downloadIcon(512)">
+          Download icon-512.png
+        </button>
+      </div>
+    </main>
+
+    <script>
+      const previewCanvas = document.getElementById("previewCanvas");
+
+      drawIcon(previewCanvas, 512);
+
+      function drawIcon(canvas, size) {
+        canvas.width = size;
+        canvas.height = size;
+
+        const context = canvas.getContext("2d");
+
+        context.clearRect(0, 0, size, size);
+
+        const gradient = context.createLinearGradient(0, 0, size, size);
+
+        gradient.addColorStop(0, "#0f172a");
+        gradient.addColorStop(0.55, "#172554");
+        gradient.addColorStop(1, "#2563eb");
+
+        roundedRectangle(context, 0, 0, size, size, size * 0.22);
+
+        context.fillStyle = gradient;
+        context.fill();
+
+        context.beginPath();
+        context.arc(size * 0.73, size * 0.25, size * 0.22, 0, Math.PI * 2);
+
+        context.fillStyle = "rgba(96, 165, 250, 0.25)";
+
+        context.fill();
+
+        roundedRectangle(
+          context,
+          size * 0.19,
+          size * 0.19,
+          size * 0.62,
+          size * 0.62,
+          size * 0.16,
+        );
+
+        context.fillStyle = "rgba(255, 255, 255, 0.10)";
+
+        context.fill();
+
+        context.strokeStyle = "rgba(255, 255, 255, 0.22)";
+
+        context.lineWidth = size * 0.012;
+        context.stroke();
+
+        context.fillStyle = "#ffffff";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = `800 ${size * 0.33}px Arial`;
+
+        context.fillText("S", size / 2, size * 0.48);
+
+        context.fillStyle = "#93c5fd";
+        context.font = `700 ${size * 0.065}px Arial`;
+
+        context.fillText("KM", size / 2, size * 0.69);
+      }
+
+      function roundedRectangle(context, x, y, width, height, radius) {
+        const right = x + width;
+        const bottom = y + height;
+
+        context.beginPath();
+        context.moveTo(x + radius, y);
+        context.lineTo(right - radius, y);
+        context.quadraticCurveTo(right, y, right, y + radius);
+
+        context.lineTo(right, bottom - radius);
+        context.quadraticCurveTo(right, bottom, right - radius, bottom);
+
+        context.lineTo(x + radius, bottom);
+        context.quadraticCurveTo(x, bottom, x, bottom - radius);
+
+        context.lineTo(x, y + radius);
+        context.quadraticCurveTo(x, y, x + radius, y);
+
+        context.closePath();
+      }
+
+      function downloadIcon(size) {
+        const canvas = document.createElement("canvas");
+
+        drawIcon(canvas, size);
+
+        const downloadLink = document.createElement("a");
+
+        downloadLink.download = `icon-${size}.png`;
+
+        downloadLink.href = canvas.toDataURL("image/png");
+
+        downloadLink.click();
+      }
+    </script>
+  </body>
+</html>
